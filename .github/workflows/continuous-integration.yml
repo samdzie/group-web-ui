@@ -1,9 +1,9 @@
-name: continuous-integration
+name: Tests
 
 on: [push]
 
 jobs:
-  test:
+  pytest:
 
     runs-on: ubuntu-latest
 
