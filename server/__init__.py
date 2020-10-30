@@ -12,6 +12,12 @@ app.config['GROUP_SERVER_HOST'] = 'http://127.0.0.1:5001'
 app.config['EVENT_SERVER_HOST'] = 'http://127.0.0.1:5002'
 
 
+@app.route('/')
+def simple_homepage():
+    """Return a simple homepage while Vue integration is not complete."""
+    return '<h1>Group Web UI</h1><p>Under construction! Check back later!</p>'
+
+
 @app.route('/api')
 def hello_world():
     """A welcome message to verify a connection to the API."""
