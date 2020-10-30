@@ -19,4 +19,4 @@ jobs:
         pip install pipenv
         pipenv install --system
     - name: Run tests with pytest
-      run: python test/group_stub.py & pytest
+      run: python test/group_stub.py & python test/event_stub.py & pytest

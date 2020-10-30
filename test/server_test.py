@@ -20,3 +20,15 @@ def test_group_info(client):
     data = json.loads(resp.data)
     assert data.get('name') == 'Group A'
     assert data.get('welcome') == 'Welcome to Group A!'
+
+
+def test_group_events(client):
+    resp = client.get('/api/group/1/events')
+    data = json.loads(resp.data)
+    events = data.get('events')
+    assert events[0].get('name') == 'Breakfast'
+    assert events[0].get('start_time') == '11/01/2020 09:00 AM'
+    assert events[0].get('end_time') == '11/01/2020 10:00 AM'
+    assert events[1].get('name') == 'Lunch'
+    assert events[1].get('start_time') == '11/01/2020 01:00 PM'
+    assert events[1].get('end_time') == '11/01/2020 02:00 PM'
