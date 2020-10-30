@@ -7,4 +7,5 @@ COPY . .
 RUN ["python", "-m", "pip", "install", "--upgrade", "pip"]
 RUN ["pip", "install", "pipenv"]
 RUN ["pipenv", "install", "--system", "--deploy", "--ignore-pipfile"]
+RUN ["./scripts/build-for-server.sh"]
 CMD ["flask", "run"]
