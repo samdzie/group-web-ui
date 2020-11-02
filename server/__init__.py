@@ -47,17 +47,19 @@ def get_events(group_id):
     time."""
     request_url = app.config['EVENT_SERVER_HOST'] + '/group/' + group_id
     group_events = requests.get(request_url).json()
-    response = make_response(group_events)
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    return response
+    return jsonify(group_events)
 
 
 @app.route('/api/group/<group_id>/home')
 def get_group_home(group_id):
     """Return a JSON object containing the group's name, welcome
     message, about text, and a URL to its icon."""
-    request_url = app.config['GROUP_SERVER_HOST'] + '/group/' + group_id
-    group_info = requests.get(request_url).json()
-    response = make_response(group_info)
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    return response
+    request_url = app.config['GROUP_SERVER_HOST'] + '/api/homepage/' + group_id
+    upstream = requests.get(request_url).json()
+    downstream = {
+        'id' : group_id,
+        'name' : upstream.get('group_name'),
+        'welcome' : upstream.get('welcome_message'),
+        'about' : upstream.get('about_section'),
+    }
+    return jsonify(downstream)
