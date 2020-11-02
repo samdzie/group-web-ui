@@ -11,6 +11,15 @@ app = Flask(__name__)
 app.config.from_object('server.config')
 
 
+def check_connection(url):
+    """Return True if a connection can be established with url, return
+    False otherwise."""
+    try:
+        return requests.get(url).ok
+    except requests.ConnectionError:
+        return False
+
+
 @app.route('/')
 def send_homepage():
     """Send index.html from the built Vue app."""
@@ -39,6 +48,19 @@ def send_favicon():
 def hello_world():
     """A welcome message to verify a connection to the API."""
     return 'Welcome to the API!'
+
+
+@app.route('/api/status')
+def service_connections():
+    """Return a dict from service names to booleans indicating whether
+    a connection can be established with their hosts."""
+    urls = {
+        'home'  : app.config['GROUP_SERVER_HOST'] + '/api/homepage/docs',
+        'event' : app.config['EVENT_SERVER_HOST'] + '/',
+        'image' : app.config['IMAGE_SERVER_HOST'] + '/images/docs',
+    }
+    statuses = {x: check_connection(y) for (x,y) in urls.items()}
+    return jsonify(statuses)
 
 
 @app.route('/api/group/<group_id>/events')
