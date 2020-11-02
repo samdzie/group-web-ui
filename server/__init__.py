@@ -8,8 +8,7 @@ from flask import Flask, jsonify, make_response, send_from_directory, url_for
 
 
 app = Flask(__name__)
-app.config['GROUP_SERVER_HOST'] = 'http://127.0.0.1:5001'
-app.config['EVENT_SERVER_HOST'] = 'http://127.0.0.1:5002'
+app.config.from_object('server.config')
 
 
 @app.route('/')
