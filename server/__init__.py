@@ -12,13 +12,24 @@ app = Flask(__name__)
 app.config.from_object('server.config')
 
 
-def check_connection(url):
+def is_connected(url):
     """Return True if a connection can be established with url, return
     False otherwise."""
     try:
         return requests.get(url).ok
     except requests.ConnectionError:
         return False
+
+
+def service_connections():
+    """Return a dict from service names to booleans indicating whether
+    a connection can be established with their hosts."""
+    urls = {
+        'home'  : app.config['GROUP_SERVER_HOST'] + '/api/homepage/docs',
+        'event' : app.config['EVENT_SERVER_HOST'] + '/',
+        'image' : app.config['IMAGE_SERVER_HOST'] + '/images/docs',
+    }
+    return {x: is_connected(y) for (x,y) in urls.items()}
 
 
 @app.route('/')
@@ -52,22 +63,18 @@ def hello_world():
 
 
 @app.route('/api/status')
-def service_connections():
-    """Return a dict from service names to booleans indicating whether
-    a connection can be established with their hosts."""
-    urls = {
-        'home'  : app.config['GROUP_SERVER_HOST'] + '/api/homepage/docs',
-        'event' : app.config['EVENT_SERVER_HOST'] + '/',
-        'image' : app.config['IMAGE_SERVER_HOST'] + '/images/docs',
-    }
-    statuses = {x: check_connection(y) for (x,y) in urls.items()}
-    return jsonify(statuses)
+def send_service_connections():
+    """Send the dict returned by service_connections as a JSON object."""
+    return jsonify(service_connections())
 
 
 @app.route('/api/group/<group_id>/events')
 def get_events(group_id):
     """Return a list of all stored events in ascending order of start
     time."""
+    if not service_connections()['event']:
+        app.logger.error('cannot connect to events server')
+        abort(500)
     request_url = app.config['EVENT_SERVER_HOST'] + '/group/' + group_id
     group_events = requests.get(request_url).json()
     return jsonify(group_events)
@@ -77,6 +84,9 @@ def get_events(group_id):
 def get_group_home(group_id):
     """Return a JSON object containing the group's name, welcome
     message, about text, and a URL to its icon."""
+    if not service_connections()['home']:
+        app.logger.error('cannot connect to homepage server')
+        abort(500)
     request_url = app.config['GROUP_SERVER_HOST'] + '/api/homepage/' + group_id
     upstream = requests.get(request_url).json()
     downstream = {
@@ -91,6 +101,9 @@ def get_group_home(group_id):
 @app.route('/api/group/<group_id>/home', methods=['PUT'])
 def edit_group_home(group_id):
     """Update the group service."""
+    if not service_connections()['home']:
+        app.logger.error('cannot connect to homepage server')
+        abort(500)
     data = {}
     if request.json is None:
         abort(400)
