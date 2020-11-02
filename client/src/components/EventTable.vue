@@ -42,9 +42,7 @@ export default {
     },
     methods: {
         async getEvents() {
-            const baseURL = 'http://localhost:5000'
-            const resp = await fetch(
-                baseURL + '/api/group/' + this.groupID + '/events');
+            const resp = await fetch('/api/group/' + this.groupID + '/events');
             const json = await resp.json();
             this.events = json.events.slice();
         }

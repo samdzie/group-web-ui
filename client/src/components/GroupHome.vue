@@ -36,9 +36,7 @@ export default {
     },
     methods: {
         async getHome() {
-            const baseURL = 'http://localhost:5000'
-            const resp = await fetch(
-                baseURL + '/api/group/' + this.groupID + '/home');
+            const resp = await fetch('/api/group/' + this.groupID + '/home');
             const json = await resp.json();
             this.name = json.name;
             this.welcome = json.welcome;
