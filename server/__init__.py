@@ -4,7 +4,8 @@ import random
 import string
 from datetime import datetime, timedelta
 import requests
-from flask import Flask, jsonify, make_response, send_from_directory, url_for
+from flask import (abort, Flask, jsonify, make_response, request,
+    send_from_directory, url_for)
 
 
 app = Flask(__name__)
@@ -85,3 +86,20 @@ def get_group_home(group_id):
         'about' : upstream.get('about_section'),
     }
     return jsonify(downstream)
+
+
+@app.route('/api/group/<group_id>/home', methods=['PUT'])
+def edit_group_home(group_id):
+    """Update the group service."""
+    data = {}
+    if request.json is None:
+        abort(400)
+    if 'name' in request.json:
+        data['group_name'] = request.json['name']
+    if 'welcome' in request.json:
+        data['welcome_message'] = request.json['welcome']
+    if 'about' in request.json:
+        data['about_section'] = request.json['about']
+    request_url = app.config['GROUP_SERVER_HOST'] + '/api/homepage/' + group_id
+    resp = requests.patch(request_url, json=data)
+    return 'passed', resp.status_code
