@@ -6,6 +6,8 @@ UMass Amherst.
 
 This repository contains the web user interface for this system.
 
+The service is deployed [here][2].
+
 ## Development
 To build the service for development, use the following instructions:
 
@@ -43,3 +45,4 @@ organize data in a more convenient format for the client.
 Documentation for the backend's API is [here](server/README.md).
 
 [1]: https://sites.google.com/cs.umass.edu/compsci-497s-f20-submissions
+[2]: http://groupwebui-env.eba-9tq2awwf.us-east-1.elasticbeanstalk.com/
