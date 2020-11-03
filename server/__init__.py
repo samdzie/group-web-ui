@@ -4,11 +4,32 @@ import random
 import string
 from datetime import datetime, timedelta
 import requests
-from flask import Flask, jsonify, make_response, send_from_directory, url_for
+from flask import (abort, Flask, jsonify, make_response, request,
+    send_from_directory, url_for)
 
 
 app = Flask(__name__)
 app.config.from_object('server.config')
+
+
+def is_connected(url):
+    """Return True if a connection can be established with url, return
+    False otherwise."""
+    try:
+        return requests.get(url).ok
+    except requests.ConnectionError:
+        return False
+
+
+def service_connections():
+    """Return a dict from service names to booleans indicating whether
+    a connection can be established with their hosts."""
+    urls = {
+        'home'  : app.config['GROUP_SERVER_HOST'] + '/api/homepage/docs',
+        'event' : app.config['EVENT_SERVER_HOST'] + '/',
+        'image' : app.config['IMAGE_SERVER_HOST'] + '/images/docs',
+    }
+    return {x: is_connected(y) for (x,y) in urls.items()}
 
 
 @app.route('/')
@@ -41,23 +62,57 @@ def hello_world():
     return 'Welcome to the API!'
 
 
+@app.route('/api/status')
+def send_service_connections():
+    """Send the dict returned by service_connections as a JSON object."""
+    return jsonify(service_connections())
+
+
 @app.route('/api/group/<group_id>/events')
 def get_events(group_id):
     """Return a list of all stored events in ascending order of start
     time."""
+    if not service_connections()['event']:
+        app.logger.error('cannot connect to events server')
+        abort(500)
     request_url = app.config['EVENT_SERVER_HOST'] + '/group/' + group_id
     group_events = requests.get(request_url).json()
-    response = make_response(group_events)
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    return response
+    return jsonify(group_events)
 
 
 @app.route('/api/group/<group_id>/home')
 def get_group_home(group_id):
     """Return a JSON object containing the group's name, welcome
     message, about text, and a URL to its icon."""
-    request_url = app.config['GROUP_SERVER_HOST'] + '/group/' + group_id
-    group_info = requests.get(request_url).json()
-    response = make_response(group_info)
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    return response
+    if not service_connections()['home']:
+        app.logger.error('cannot connect to homepage server')
+        abort(500)
+    request_url = app.config['GROUP_SERVER_HOST'] + '/api/homepage/' + group_id
+    upstream = requests.get(request_url).json()
+    downstream = {
+        'id' : group_id,
+        'name' : upstream.get('group_name'),
+        'welcome' : upstream.get('welcome_message'),
+        'about' : upstream.get('about_section'),
+    }
+    return jsonify(downstream)
+
+
+@app.route('/api/group/<group_id>/home', methods=['PUT'])
+def edit_group_home(group_id):
+    """Update the group service."""
+    if not service_connections()['home']:
+        app.logger.error('cannot connect to homepage server')
+        abort(500)
+    data = {}
+    if request.json is None:
+        abort(400)
+    if 'name' in request.json:
+        data['group_name'] = request.json['name']
+    if 'welcome' in request.json:
+        data['welcome_message'] = request.json['welcome']
+    if 'about' in request.json:
+        data['about_section'] = request.json['about']
+    request_url = app.config['GROUP_SERVER_HOST'] + '/api/homepage/' + group_id
+    resp = requests.patch(request_url, json=data)
+    return 'passed', resp.status_code
