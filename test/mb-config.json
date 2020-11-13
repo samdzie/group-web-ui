@@ -1,0 +1,131 @@
+{
+  "imposters": [
+    {
+      "protocol": "http",
+      "port": 5001,
+      "recordRequests": false,
+      "stubs": [
+        {
+          "responses": [
+            {
+              "is": {
+                "statusCode": 200
+              }
+            }
+          ],
+          "predicates": [
+            {
+              "equals": {
+                "path": "/api/homepage/docs",
+                "method": "GET"
+              }
+            }
+          ]
+        },
+        {
+          "responses": [
+            {
+              "is": {
+                "statusCode": 200,
+                "headers": {
+                  "Content-Type": "application/json"
+                },
+                "body": {
+                  "group_id": 1,
+                  "group_name": "Group A",
+                  "welcome_message": "Welcome to Group A!",
+                  "about_section": "This is what we're about.",
+                  "email": "test@example.com",
+                  "phone_number": "5551234567",
+                  "website": "example.com"
+                }
+              }
+            }
+          ],
+          "predicates": [
+            {
+              "and": [
+                {
+                  "startsWith": {
+                    "path": "/api/homepage/"
+                  }
+                },
+                {
+                  "equals": {
+                    "method": "GET"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "protocol": "http",
+      "port": 5002,
+      "recordRequests": false,
+      "stubs": [
+        {
+          "responses": [
+            {
+              "is": {
+                "statusCode": 200
+              }
+            }
+          ],
+          "predicates": [
+            {
+              "equals": {
+                "path": "/",
+                "method": "GET"
+              }
+            }
+          ]
+        },
+        {
+          "responses": [
+            {
+              "is": {
+                "statusCode": 200,
+                "headers": {
+                  "Content-Type": "application/json"
+                },
+                "body": {
+                  "events": [
+                    {
+                      "name": "Breakfast",
+                      "start_time": "11/01/2020 09:00 AM",
+                      "end_time": "11/01/2020 10:00 AM"
+                    },
+                    {
+                      "name": "Lunch",
+                      "start_time": "11/01/2020 01:00 PM",
+                      "end_time": "11/01/2020 02:00 PM"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "predicates": [
+            {
+              "and": [
+                {
+                  "startsWith": {
+                    "path": "/group/"
+                  }
+                },
+                {
+                  "equals": {
+                    "method": "GET"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

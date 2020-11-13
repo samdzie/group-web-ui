@@ -17,6 +17,7 @@ def test_welcome_message(client):
 
 def test_group_info(client):
     resp = client.get('/api/group/1/home')
+    assert resp.status_code == 200
     data = json.loads(resp.data)
     assert data.get('name') == 'Group A'
     assert data.get('welcome') == 'Welcome to Group A!'
@@ -24,6 +25,7 @@ def test_group_info(client):
 
 def test_group_events(client):
     resp = client.get('/api/group/1/events')
+    assert resp.status_code == 200
     data = json.loads(resp.data)
     events = data.get('events')
     assert events[0].get('name') == 'Breakfast'
