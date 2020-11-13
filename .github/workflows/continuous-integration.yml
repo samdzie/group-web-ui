@@ -22,6 +22,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install pipenv
         pipenv install --system
-        npm install mountebank
+        npm install -g mountebank
     - name: Run test script
       run: ./test/test.sh
