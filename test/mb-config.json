@@ -62,6 +62,42 @@
               ]
             }
           ]
+        },
+        {
+          "responses": [
+            {
+              "is": {
+                "statusCode": 200,
+                "headers": {
+                  "Content-Type": "application/json"
+                },
+                "body": {
+                  "welcome_message": "Welcome to Group A!",
+                  "about_section": "This is what we're about.",
+                  "email": "test@example.com",
+                  "phone_number": "5551234567",
+                  "website": "example.com",
+                  "group_name":"Group A"
+                }
+              }
+            }
+          ],
+          "predicates": [
+            {
+              "and": [
+                {
+                  "startsWith": {
+                    "path": "/api/homepage/"
+                  }
+                },
+                {
+                  "equals": {
+                    "method": "PATCH"
+                  }
+                }
+              ]
+            }
+          ]
         }
       ]
     },

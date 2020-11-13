@@ -15,12 +15,21 @@ def test_welcome_message(client):
     assert rv.data == b'Welcome to the API!'
 
 
-def test_group_info(client):
+def test_read_group_info(client):
     resp = client.get('/api/group/1/home')
     assert resp.status_code == 200
     data = json.loads(resp.data)
     assert data.get('name') == 'Group A'
     assert data.get('welcome') == 'Welcome to Group A!'
+
+
+def test_edit_group_info(client):
+    resp = client.put('/api/group/1/home', json={
+        'name' : 'Name',
+        'welcome' : 'Welcome',
+        'about' : 'About'
+    })
+    assert resp.status_code == 200
 
 
 def test_group_events(client):
