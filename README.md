@@ -1,4 +1,6 @@
 # Group Web UI
+![Tests](https://github.com/samdzie/group-web-ui/workflows/Tests/badge.svg)
+
 A system for organizing communities, with features such as calendars,
 announcements, and home pages. Currently being developed by Team C for
 [CS 497S: Scalable Web Systems][1], taught by Professor Tim Richards at
