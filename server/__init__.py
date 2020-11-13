@@ -88,7 +88,11 @@ def get_group_home(group_id):
         app.logger.error('cannot connect to homepage server')
         abort(500)
     request_url = app.config['GROUP_SERVER_HOST'] + '/api/homepage/' + group_id
-    upstream = requests.get(request_url).json()
+    try:
+        upstream = requests.get(request_url).json()
+    except ValueError:
+        app.logger.error('No valid JSON returned from homepage service')
+        abort(500)
     downstream = {
         'id' : group_id,
         'name' : upstream.get('group_name'),
