@@ -103,7 +103,7 @@
           "responses": [
             {
               "is": {
-                "statusCode": 200,
+                "statusCode": 201,
                 "headers": {
                   "Content-Type": "application/json"
                 },
@@ -129,7 +129,7 @@
                 },
                 {
                   "equals": {
-                    "method": "PATCH"
+                    "method": "POST"
                   }
                 }
               ]

@@ -22,11 +22,7 @@ def test_create_group(client):
         'about' : 'This is what Group A is about.'
     }
     resp = client.post('/api/group', json=info)
-    assert resp.status_code == 200
-    rjson = resp.json()
-    assert rjson.get('name') == info.get('name')
-    assert rjson.get('welcome') == info.get('welcome')
-    assert rjson.get('about') == info.get('about')
+    assert resp.status_code == 201
 
 
 def test_read_group_info(client):
