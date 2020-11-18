@@ -31,6 +31,12 @@ edited in order for Flask to serve it. Alternatively, `cd` into
 [client](client) and run `yarn serve` to refresh the client after each
 change. This method does not allow the client to connect to the server.
 
+## Testing
+To test the service on your local machine, install [Mountebank][3] and
+run `./test/test.sh` to run a [bash script](test/test.sh). This script
+stubs out upstream services with Mountebank and runs [test](test) with
+pytest.
+
 ## Design and Implementation
 This web app is designed according to the backends for frontends
 pattern described by Sam Newman in *Building Microservices*. The server
@@ -48,3 +54,4 @@ Documentation for the backend's API is [here](server/README.md).
 
 [1]: https://sites.google.com/cs.umass.edu/compsci-497s-f20-submissions
 [2]: http://groupwebui-env.eba-9tq2awwf.us-east-1.elasticbeanstalk.com/
+[3]: http://mbtest.org
