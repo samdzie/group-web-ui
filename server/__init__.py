@@ -68,6 +68,30 @@ def send_service_connections():
     return jsonify(service_connections())
 
 
+@app.route('/api/group', methods=['POST'])
+def create_group():
+    """Create a group.
+
+    The POST request should contain JSON with the following attributes:
+    name    the group's name
+    welcome the group's welcome message
+    about   the group's about section
+    """
+    if not service_connections()['home']:
+        app.logger.error('cannot connect to homepage server')
+        abort(500)
+    if request.json is None or not 'name' in request.json:
+        abort(400)
+    request_url = app.config['GROUP_SERVER_HOST'] + '/api/homepage/'
+    data = {
+        'group_name' : request.json.get('name'),
+        'welcome_message' : request.json.get('welcome'),
+        'about_section' : request.json.get('about')
+    }
+    resp = requests.post(request_url, json=data)
+    return 'passed', resp.status_code
+
+
 @app.route('/api/group/<group_id>/events')
 def get_events(group_id):
     """Return a list of all stored events in ascending order of start
