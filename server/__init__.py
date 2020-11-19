@@ -25,7 +25,7 @@ def service_connections():
     """Return a dict from service names to booleans indicating whether
     a connection can be established with their hosts."""
     urls = {
-        'home'  : app.config['GROUP_SERVER_HOST'] + '/api/homepage/docs',
+        'home'  : app.config['GROUP_SERVER_HOST'] + '/',
         'event' : app.config['EVENT_SERVER_HOST'] + '/api/events/docs',
         'image' : app.config['IMAGE_SERVER_HOST'] + '/images/docs',
     }
