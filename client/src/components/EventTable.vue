@@ -13,6 +13,7 @@
                 <EventRow
                     v-for="event in events"
                     :key="event.id"
+                    v-bind:id="event.id"
                     v-bind:title="event.title"
                     v-bind:start="event.start"
                     v-bind:end="event.end"

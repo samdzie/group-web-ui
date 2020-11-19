@@ -19,6 +19,7 @@
 export default {
     name: 'EventRow',
     props: {
+        id: String,
         title: String,
         description: String,
         start: String,
