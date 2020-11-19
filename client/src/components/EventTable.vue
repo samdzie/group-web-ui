@@ -22,6 +22,13 @@
                 />
             </tbody>
         </table>
+        <button @click="events.push({
+            'id' : '-1',
+            'title' : 'New Event',
+            'description' : 'A new event',
+            'start' : 'start time',
+            'end' : 'end time',
+        })">Create Event</button>
     </div>
 </template>
 
