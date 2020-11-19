@@ -106,7 +106,44 @@ def delete_group(group_id):
     if resp.status_code == 200:
         return 'deleted', 200
     else:
-        return 'error ' + resp.status_code, resp.status_code
+        return 'error ' + str(resp.status_code), resp.status_code
+
+
+@app.route('/api/group/<group_id>/events', methods=['POST'])
+def create_event(group_id):
+    """Create a new event and add it to the list of events associated
+    with a particular group.
+
+    The POST request should contain JSON with the following attributes:
+    title       the title of the event
+    description the description of the event
+    start_time  beginning time of the event
+    end_time    end time of the event
+    """
+    if not service_connections()['event']:
+        app.logger.error('cannot connect to events server')
+        abort(500)
+    required = [
+        'title',
+        'description',
+        'start_time',
+        'end_time'
+    ]
+    if request.json is None or not all(a in request.json for a in required):
+        abort(400)
+    request_url = app.config['EVENT_SERVER_HOST'] + '/api/events/'
+    data = {
+        'title' : request.json.get('title'),
+        'description' : request.json.get('description'),
+        'start_time' : request.json.get('start_time'),
+        'end_time' : request.json.get('end_time'),
+        'people' : []
+    }
+    resp = requests.post(request_url, json=data)
+    if resp.status_code == 201:
+        return jsonify(resp.json()), 201
+    else:
+        return 'error ' + str(resp.status_code), resp.status_code
 
 
 @app.route('/api/group/<group_id>/events')
