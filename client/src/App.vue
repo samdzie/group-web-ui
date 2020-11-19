@@ -4,6 +4,10 @@
             <input id="groupIDInput" placeholder="Enter group ID">
             <button type="submit">View Group</button>
         </form>
+        <form v-on:submit.prevent="createGroup">
+            <input id="groupNameInput" placeholder="New group name">
+            <button type="submit">Create Group</button>
+        </form>
         <div id="content" v-if="groupID">
             <GroupHome
                 v-bind:groupID="groupID"
@@ -35,6 +39,25 @@ export default {
     methods: {
         handleSubmit() {
             this.groupID = document.getElementById("groupIDInput").value;
+        },
+        async createGroup() {
+            let data = {
+                'name' : document.getElementById("groupNameInput").value,
+            };
+            let resp = await fetch('/api/group', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+            if (!resp.ok) {
+                alert('error creating group');
+            } else {
+                let json = await resp.json();
+                let group_id = json.group_id;
+                alert('Successfully created group ' + group_id);
+            }
         },
     },
 }

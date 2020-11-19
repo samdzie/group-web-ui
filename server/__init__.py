@@ -89,7 +89,10 @@ def create_group():
         'about_section' : request.json.get('about')
     }
     resp = requests.post(request_url, json=data)
-    return 'passed', resp.status_code
+    if resp.status_code == 201:
+        return jsonify(resp.json()), resp.status_code
+    else:
+        return 'passed', resp.status_code
 
 
 @app.route('/api/group/<group_id>/events')
