@@ -30,6 +30,7 @@
             </div>
         </div>
         <button v-if="editing" v-on:click="submitEdit">Save</button>
+        <button v-if="editing" v-on:click="deleteGroup">Delete</button>
         <button v-else v-on:click="editing = true">Edit</button>
     </div>
 </template>
@@ -75,6 +76,19 @@ export default {
                 body: JSON.stringify(data),
             });
             this.editing = false;
+        },
+        async deleteGroup() {
+            let confirmation = confirm('Are you sure you want to delete this group?');
+            if (confirmation) {
+                let resp = await fetch('/api/group/' + this.groupID, {
+                    method: 'DELETE',
+                });
+                if (resp.ok) {
+                    location.reload();
+                } else {
+                    alert('Error ' + resp.status + ' while deleting group.');
+                }
+            }
         },
     }
 }
