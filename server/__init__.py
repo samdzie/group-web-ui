@@ -117,8 +117,8 @@ def create_event(group_id):
     The POST request should contain JSON with the following attributes:
     title       the title of the event
     description the description of the event
-    start_time  beginning time of the event
-    end_time    end time of the event
+    start       beginning time of the event
+    end         end time of the event
     """
     if not service_connections()['event']:
         app.logger.error('cannot connect to events server')
@@ -126,8 +126,8 @@ def create_event(group_id):
     required = [
         'title',
         'description',
-        'start_time',
-        'end_time'
+        'start',
+        'end',
     ]
     if request.json is None or not all(a in request.json for a in required):
         abort(400)
@@ -135,8 +135,8 @@ def create_event(group_id):
     data = {
         'title' : request.json.get('title'),
         'description' : request.json.get('description'),
-        'start_time' : request.json.get('start_time'),
-        'end_time' : request.json.get('end_time'),
+        'start_time' : request.json.get('start'),
+        'end_time' : request.json.get('end'),
         'people' : []
     }
     resp = requests.post(request_url, json=data)
