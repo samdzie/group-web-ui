@@ -158,6 +158,20 @@ def get_events(group_id):
     return jsonify(group_events)
 
 
+@app.route('/api/group/<group_id>/events/<event_id>', methods=['DELETE'])
+def delete_event(group_id, event_id):
+    """Delete the event with a given ID."""
+    if not service_connections()['event']:
+        app.logger.error('cannot connect to events server')
+        abort(500)
+    request_url = app.config['EVENT_SERVER_HOST'] + '/api/events/' + event_id
+    resp = requests.delete(request_url)
+    if resp.status_code == 200:
+        return 'deleted', 200
+    else:
+        return 'error ' + str(resp.status_code), resp.status_code
+
+
 @app.route('/api/group/<group_id>/home')
 def get_group_home(group_id):
     """Return a JSON object containing the group's name, welcome
