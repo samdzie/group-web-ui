@@ -4,6 +4,7 @@
             <thead>
                 <tr>
                     <th>Event</th>
+                    <th>Description</th>
                     <th>Start</th>
                     <th>End</th>
                 </tr>
