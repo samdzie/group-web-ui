@@ -5,6 +5,7 @@
         <td><input v-model="start_"></td>
         <td><input v-model="end_"></td>
         <td><button v-on:click="saveEvent">Save</button></td>
+        <td><button v-on:click="deleteEvent">Delete</button></td>
     </tr>
     <tr v-else>
         <td>{{ title_ }}</td>
@@ -39,6 +40,12 @@ export default {
             alert("saved event!");
             this.editing = false;
         },
+        async deleteEvent() {
+            let confirmation = confirm("Are you sure you want to delete this event?");
+            if (confirmation) {
+                this.$emit('delete-event');
+            }
+        }
     }
 }
 </script>
