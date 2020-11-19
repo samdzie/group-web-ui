@@ -95,6 +95,20 @@ def create_group():
         return 'passed', resp.status_code
 
 
+@app.route('/api/group/<group_id>', methods=['DELETE'])
+def delete_group(group_id):
+    """Delete a group given its ID."""
+    if not service_connections()['home']:
+        app.logger.error('cannot connect to homepage server')
+        abort(500)
+    request_url = app.config['GROUP_SERVER_HOST'] + '/api/homepage/' + group_id
+    resp = requests.delete(request_url)
+    if resp.status_code == 200:
+        return 'deleted', 200
+    else:
+        return 'error ' + resp.status_code, resp.status_code
+
+
 @app.route('/api/group/<group_id>/events')
 def get_events(group_id):
     """Return a list of all stored events in ascending order of start
