@@ -26,7 +26,7 @@ def service_connections():
     a connection can be established with their hosts."""
     urls = {
         'home'  : app.config['GROUP_SERVER_HOST'] + '/api/homepage/docs',
-        'event' : app.config['EVENT_SERVER_HOST'] + '/',
+        'event' : app.config['EVENT_SERVER_HOST'] + '/api/events/docs',
         'image' : app.config['IMAGE_SERVER_HOST'] + '/images/docs',
     }
     return {x: is_connected(y) for (x,y) in urls.items()}
