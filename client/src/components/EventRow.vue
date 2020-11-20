@@ -24,7 +24,8 @@ export default {
         title: String,
         description: String,
         start: String,
-        end: String
+        end: String,
+        groupID: String,
     },
     data: function() {
         return {
@@ -43,7 +44,14 @@ export default {
         async deleteEvent() {
             let confirmation = confirm("Are you sure you want to delete this event?");
             if (confirmation) {
-                this.$emit('delete-event');
+                let resp = await fetch('/api/group/' + this.groupID + '/events/' + this.id, {
+                    method : 'DELETE',
+                });
+                if (resp.ok) {
+                    this.$emit('delete-event');
+                } else {
+                    alert('Error ' + resp.status + ' while deleting event.');
+                }
             }
         }
     }

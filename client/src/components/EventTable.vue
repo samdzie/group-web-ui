@@ -18,6 +18,7 @@
                     v-bind:description="event.description"
                     v-bind:start="event.start"
                     v-bind:end="event.end"
+                    v-bind:groupID="groupID"
                     @delete-event="getEvents()"
                 />
             </tbody>
