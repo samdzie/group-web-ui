@@ -82,7 +82,7 @@ def create_group():
         abort(500)
     if request.json is None or not 'name' in request.json:
         abort(400)
-    request_url = app.config['GROUP_SERVER_HOST'] + '/api/homepage/'
+    request_url = app.config['GROUP_SERVER_HOST'] + '/homepage/'
     data = {
         'group_name' : request.json.get('name'),
         'welcome_message' : request.json.get('welcome'),
@@ -101,7 +101,7 @@ def delete_group(group_id):
     if not service_connections()['home']:
         app.logger.error('cannot connect to homepage server')
         abort(500)
-    request_url = app.config['GROUP_SERVER_HOST'] + '/api/homepage/' + group_id
+    request_url = app.config['GROUP_SERVER_HOST'] + '/homepage/' + group_id
     resp = requests.delete(request_url)
     if resp.status_code == 200:
         return 'deleted', 200
@@ -206,7 +206,7 @@ def get_group_home(group_id):
     if not service_connections()['home']:
         app.logger.error('cannot connect to homepage server')
         abort(500)
-    request_url = app.config['GROUP_SERVER_HOST'] + '/api/homepage/' + group_id
+    request_url = app.config['GROUP_SERVER_HOST'] + '/homepage/' + group_id
     try:
         upstream = requests.get(request_url).json()
     except ValueError:
@@ -236,6 +236,6 @@ def edit_group_home(group_id):
         data['welcome_message'] = request.json['welcome']
     if 'about' in request.json:
         data['about_section'] = request.json['about']
-    request_url = app.config['GROUP_SERVER_HOST'] + '/api/homepage/' + group_id
+    request_url = app.config['GROUP_SERVER_HOST'] + '/homepage/' + group_id
     resp = requests.patch(request_url, json=data)
     return 'passed', resp.status_code
