@@ -212,6 +212,8 @@ def get_group_home(group_id):
     except ValueError:
         app.logger.error('No valid JSON returned from homepage service')
         abort(500)
+    if upstream.get('detail') == 'Homepage not found':
+        abort(404)
     downstream = {
         'id' : group_id,
         'name' : upstream.get('group_name'),
