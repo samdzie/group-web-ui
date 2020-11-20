@@ -86,7 +86,8 @@ def create_group():
     data = {
         'group_name' : request.json.get('name'),
         'welcome_message' : request.json.get('welcome'),
-        'about_section' : request.json.get('about')
+        'about_section' : request.json.get('about'),
+        'events' : []
     }
     resp = requests.post(request_url, json=data)
     if resp.status_code == 201:
@@ -132,10 +133,20 @@ def create_event(group_id):
         'people' : [],
     }
     resp = requests.post(request_url, json=data)
-    if resp.status_code == 201:
-        return jsonify(resp.json()), 201
-    else:
+    if resp.status_code != 201:
         return 'error ' + str(resp.status_code), resp.status_code
+    gurl = app.config['GROUP_SERVER_HOST'] + '/homepage/' + group_id
+    grsp = requests.get(gurl)
+    if grsp.status_code != 200:
+        app.logger.error('Error retrieving group ' + group_id)
+        return 'error ' + str(grsp.status_code), grsp.status_code
+    events = grsp.json().get('events')
+    events.append(resp.json().get('id'))
+    grsp = requests.patch(gurl, json={'events' : events})
+    if grsp.status_code == 200:
+        return 'updated', grsp.status_code
+    else:
+        return 'error ' + str(grsp.status_code), grsp.status_code
 
 
 @app.route('/api/group/<group_id>/events')
@@ -145,18 +156,29 @@ def get_events(group_id):
     if not service_connections()['event']:
         app.logger.error('cannot connect to events server')
         abort(500)
-    request_url = app.config['EVENT_SERVER_HOST'] + '/api/events/'
-    rjson = requests.get(request_url).json()
-    group_events = [
-        {
-            'id' : entry.get('id'),
-            'title' : entry.get('title'),
-            'description' : entry.get('description'),
-            'start' : entry.get('start_time'),
-            'end' : entry.get('end_time'),
-        } for entry in rjson
-    ]
-    return jsonify(group_events)
+    group_url = app.config['GROUP_SERVER_HOST'] + '/homepage/' + group_id
+    group_resp = requests.get(group_url)
+    if group_resp.status_code != 200:
+        app.logger.error('Error retrieving group')
+        return 'error ' + group_resp.status_code, group_resp.status_code
+    event_ids = group_resp.json().get('events')
+    events = []
+    for event_id in event_ids:
+        event_url = (app.config['EVENT_SERVER_HOST']
+            + '/api/events/' + str(event_id) + '/')
+        event_resp = requests.get(event_url)
+        if event_resp.status_code != 200:
+            app.logger.error('Error retrieving event id ' + str(event_id))
+            return 'error ' + str(event_resp.status_code), event_resp.status_code
+        ejson = event_resp.json()
+        events.append({
+            'id' : ejson.get('id'),
+            'title' : ejson.get('title'),
+            'description' : ejson.get('description'),
+            'start' : ejson.get('start_time'),
+            'end' : ejson.get('end_time'),
+        })
+    return jsonify(events)
 
 
 @app.route('/api/group/<group_id>/events/<event_id>', methods=['PUT'])
@@ -185,18 +207,29 @@ def update_event(group_id, event_id):
         return 'error ' + str(resp.status_code), resp.status_code
 
 
-@app.route('/api/group/<group_id>/events/<event_id>', methods=['DELETE'])
+@app.route('/api/group/<group_id>/events/<int:event_id>', methods=['DELETE'])
 def delete_event(group_id, event_id):
     """Delete the event with a given ID."""
     if not service_connections()['event']:
         app.logger.error('cannot connect to events server')
         abort(500)
-    request_url = app.config['EVENT_SERVER_HOST'] + '/api/events/' + event_id
+    request_url = (
+        app.config['EVENT_SERVER_HOST'] + '/api/events/' + str(event_id))
     resp = requests.delete(request_url)
-    if resp.status_code == 200:
+    if resp.status_code != 200:
+        app.logger.error('error deleting event ' + str(event_id))
+        return 'error ' + str(resp.status_code), resp.status_code
+    gurl = app.config['GROUP_SERVER_HOST'] + '/homepage/' + group_id
+    grsp = requests.get(gurl)
+    if grsp.status_code != 200:
+        app.logger.error('error retrieving group ' + str(group_id))
+    events = grsp.json().get('events')
+    events.remove(event_id)
+    grsp = requests.patch(gurl, json={'events' : events})
+    if grsp.status_code == 200:
         return 'deleted', 200
     else:
-        return 'error ' + str(resp.status_code), resp.status_code
+        return 'error ' + str(grsp.status_code), grsp.status_code
 
 
 @app.route('/api/group/<group_id>/home')
