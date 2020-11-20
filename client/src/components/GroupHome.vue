@@ -5,6 +5,14 @@
                 v-bind:src="icon"
                 id="group-icon"
             >
+            <form v-if="editing" @submit="uploadIcon">
+                <input
+                    type="file"
+                    accept="image/*"
+                    @change="previewIcon($event)"
+                    id="icon"
+                >
+            </form>
             <div id="group-welcome">
                 <form v-if="editing" v-on:submit="submitEdit">
                     <section>
@@ -90,6 +98,10 @@ export default {
                 }
             }
         },
+        async previewIcon(event) {
+            let file = event.target.files[0];
+            this.icon = window.URL.createObjectURL(file);
+        },
     }
 }
 </script>
@@ -105,11 +117,10 @@ export default {
     display: flex;
     height: 200px;
 }
-#group-icon-container {
-    height: 100%;
-}
 #group-icon {
-    height: 100%;
+    height: 200px;
+    width: 200px;
+    min-width: 200px;
 }
 #group-welcome {
     width: 100%;
