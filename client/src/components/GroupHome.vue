@@ -16,10 +16,16 @@
             <div id="group-welcome">
                 <form v-if="editing" v-on:submit="submitEdit">
                     <section>
-                        <input v-model="name">
+                        <input
+                            v-model="name"
+                            placeholder='Group name'
+                        >
                     </section>
                     <section>
-                        <textarea v-model="welcome"></textarea>
+                        <textarea
+                            v-model="welcome"
+                            placeholder="Enter a welcome message..."
+                        ></textarea>
                     </section>
                 </form>
                 <div v-else>
@@ -31,7 +37,10 @@
         <div id="group-about">
             <h2>About</h2>
             <form v-if="editing">
-                <textarea v-model="about"></textarea>
+                <textarea
+                    v-model="about"
+                    placeholder="Enter an about section..."
+                ></textarea>
             </form>
             <div v-else>
                 <p>{{ about }}</p>
