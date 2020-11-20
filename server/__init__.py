@@ -160,6 +160,32 @@ def get_events(group_id):
     return jsonify(group_events)
 
 
+@app.route('/api/group/<group_id>/events/<event_id>', methods=['PUT'])
+def update_event(group_id, event_id):
+    """Update the event with a given ID."""
+    if not service_connections()['event']:
+        app.logger.error('cannot connect to events server')
+        abort(500)
+    request_url = app.config['EVENT_SERVER_HOST'] + '/api/events/' + event_id
+    if request.json is None:
+        abort(400)
+    data = {}
+    if request.json.get('title') is not None:
+        data['title'] = request.json.get('title')
+    if request.json.get('description') is not None:
+        data['description'] = request.json.get('description')
+    if request.json.get('start') is not None:
+        data['start_time'] = request.json.get('start')
+    if request.json.get('end') is not None:
+        data['end_time'] = request.json.get('end')
+    data['people'] = []
+    resp = requests.patch(request_url, json=data)
+    if resp.status_code == 200:
+        return 'updated', 200
+    else:
+        return 'error ' + str(resp.status_code), resp.status_code
+
+
 @app.route('/api/group/<group_id>/events/<event_id>', methods=['DELETE'])
 def delete_event(group_id, event_id):
     """Delete the event with a given ID."""

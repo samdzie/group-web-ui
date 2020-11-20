@@ -38,8 +38,24 @@ export default {
     },
     methods: {
         async saveEvent() {
-            alert("saved event!");
-            this.editing = false;
+            let data = {
+                'title' : this.title_,
+                'description' : this.description_,
+                'start' : this.start_,
+                'end' : this.end_,
+            };
+            let resp = await fetch('/api/group/' + this.groupID + '/events/' + this.id, {
+                method : 'PUT',
+                headers : {
+                    'Content-Type' : 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+            if (resp.ok) {
+                this.editing = false;
+            } else {
+                alert('Error ' + resp.status + ' while saving event.');
+            }
         },
         async deleteEvent() {
             let confirmation = confirm("Are you sure you want to delete this event?");
