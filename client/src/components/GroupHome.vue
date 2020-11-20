@@ -64,11 +64,17 @@ export default {
     methods: {
         async getHome() {
             const resp = await fetch('/api/group/' + this.groupID + '/home');
-            const json = await resp.json();
-            this.name = json.name;
-            this.welcome = json.welcome;
-            this.about = json.about;
-            this.icon = json.icon;
+            if (resp.status == 404) {
+                alert('Group not found.');
+            } else if (!resp.ok) {
+                alert('Error ' + resp.status + ' when fetching group.');
+            } else {
+                const json = await resp.json();
+                this.name = json.name;
+                this.welcome = json.welcome;
+                this.about = json.about;
+                this.icon = json.icon;
+            }
         },
         async submitEdit() {
             let data = {
