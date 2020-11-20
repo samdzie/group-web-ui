@@ -22,13 +22,7 @@
                 />
             </tbody>
         </table>
-        <button @click="events.push({
-            'id' : '-1',
-            'title' : 'New Event',
-            'description' : 'A new event',
-            'start' : 'start time',
-            'end' : 'end time',
-        })">Create Event</button>
+        <button @click="createEvent()">Create Event</button>
     </div>
 </template>
 
@@ -56,7 +50,17 @@ export default {
             const resp = await fetch('/api/group/' + this.groupID + '/events');
             const json = await resp.json();
             this.events = json.events.slice();
-        }
+        },
+        async createEvent() {
+            let resp = await fetch('/api/group/' + this.groupID + '/events', {
+                method : 'POST',
+            });
+            if (resp.ok) {
+                this.getEvents();
+            } else {
+                alert('Error ' + resp.status + ' while creating event.');
+            }
+        },
     }
 }
 </script>

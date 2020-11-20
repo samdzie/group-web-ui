@@ -123,21 +123,13 @@ def create_event(group_id):
     if not service_connections()['event']:
         app.logger.error('cannot connect to events server')
         abort(500)
-    required = [
-        'title',
-        'description',
-        'start',
-        'end',
-    ]
-    if request.json is None or not all(a in request.json for a in required):
-        abort(400)
     request_url = app.config['EVENT_SERVER_HOST'] + '/api/events/'
     data = {
-        'title' : request.json.get('title'),
-        'description' : request.json.get('description'),
-        'start_time' : request.json.get('start'),
-        'end_time' : request.json.get('end'),
-        'people' : []
+        'title' : 'New event',
+        'description' : 'A new event!',
+        'start_time' : '01/01/21 12:00 AM',
+        'end_time' : '01/01/21 01:00 AM',
+        'people' : [],
     }
     resp = requests.post(request_url, json=data)
     if resp.status_code == 201:
