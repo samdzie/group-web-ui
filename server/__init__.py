@@ -156,7 +156,6 @@ def get_events(group_id):
             'end' : entry.get('end_time'),
         } for entry in rjson
     ]
-    app.logger.debug(jsonify(group_events))
     return jsonify(group_events)
 
 
