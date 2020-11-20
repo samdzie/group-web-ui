@@ -145,18 +145,29 @@ def get_events(group_id):
     if not service_connections()['event']:
         app.logger.error('cannot connect to events server')
         abort(500)
-    request_url = app.config['EVENT_SERVER_HOST'] + '/api/events/'
-    rjson = requests.get(request_url).json()
-    group_events = [
-        {
-            'id' : entry.get('id'),
-            'title' : entry.get('title'),
-            'description' : entry.get('description'),
-            'start' : entry.get('start_time'),
-            'end' : entry.get('end_time'),
-        } for entry in rjson
-    ]
-    return jsonify(group_events)
+    group_url = app.config['GROUP_SERVER_HOST'] + '/homepage/' + group_id
+    group_resp = requests.get(group_url)
+    if group_resp.status_code != 200:
+        app.logger.error('Error retrieving group')
+        return 'error ' + group_resp.status_code, group_resp.status_code
+    event_ids = group_resp.json().get('events')
+    events = []
+    for event_id in event_ids:
+        event_url = (app.config['EVENT_SERVER_HOST']
+            + '/api/events/' + str(event_id) + '/')
+        event_resp = requests.get(event_url)
+        if event_resp.status_code != 200:
+            app.logger.error('Error retrieving event id ' + str(event_id))
+            return 'error ' + str(event_resp.status_code), event_resp.status_code
+        ejson = event_resp.json()
+        events.append({
+            'id' : ejson.get('id'),
+            'title' : ejson.get('title'),
+            'description' : ejson.get('description'),
+            'start' : ejson.get('start_time'),
+            'end' : ejson.get('end_time'),
+        })
+    return jsonify(events)
 
 
 @app.route('/api/group/<group_id>/events/<event_id>', methods=['PUT'])
