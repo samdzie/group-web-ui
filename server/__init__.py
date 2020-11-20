@@ -145,8 +145,18 @@ def get_events(group_id):
     if not service_connections()['event']:
         app.logger.error('cannot connect to events server')
         abort(500)
-    request_url = app.config['EVENT_SERVER_HOST'] + '/group/' + group_id
-    group_events = requests.get(request_url).json()
+    request_url = app.config['EVENT_SERVER_HOST'] + '/api/events/'
+    rjson = requests.get(request_url).json()
+    group_events = [
+        {
+            'id' : entry.get('id'),
+            'title' : entry.get('title'),
+            'description' : entry.get('description'),
+            'start' : entry.get('start_time'),
+            'end' : entry.get('end_time'),
+        } for entry in rjson
+    ]
+    app.logger.debug(jsonify(group_events))
     return jsonify(group_events)
 
 

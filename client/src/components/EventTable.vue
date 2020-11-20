@@ -49,7 +49,8 @@ export default {
         async getEvents() {
             const resp = await fetch('/api/group/' + this.groupID + '/events');
             const json = await resp.json();
-            this.events = json.events.slice();
+            console.log(json);
+            this.events = json.slice();
         },
         async createEvent() {
             let resp = await fetch('/api/group/' + this.groupID + '/events', {
