@@ -1,11 +1,7 @@
 """A Flask API for the web app."""
 
-import random
-import string
-from datetime import datetime, timedelta
 import requests
-from flask import (abort, Flask, jsonify, make_response, request,
-    send_from_directory, url_for)
+from flask import abort, Flask, jsonify, request, send_from_directory
 
 
 app = Flask(__name__)
@@ -92,8 +88,7 @@ def create_group():
     resp = requests.post(request_url, json=data)
     if resp.status_code == 201:
         return jsonify(resp.json()), resp.status_code
-    else:
-        return 'passed', resp.status_code
+    return 'passed', resp.status_code
 
 
 @app.route('/api/group/<group_id>', methods=['DELETE'])
@@ -106,8 +101,7 @@ def delete_group(group_id):
     resp = requests.delete(request_url)
     if resp.status_code == 200:
         return 'deleted', 200
-    else:
-        return 'error ' + str(resp.status_code), resp.status_code
+    return 'error ' + str(resp.status_code), resp.status_code
 
 
 @app.route('/api/group/<group_id>/events', methods=['POST'])
@@ -145,8 +139,7 @@ def create_event(group_id):
     grsp = requests.patch(gurl, json={'events' : events})
     if grsp.status_code == 200:
         return 'updated', grsp.status_code
-    else:
-        return 'error ' + str(grsp.status_code), grsp.status_code
+    return 'error ' + str(grsp.status_code), grsp.status_code
 
 
 @app.route('/api/group/<group_id>/events')
@@ -203,8 +196,7 @@ def update_event(group_id, event_id):
     resp = requests.patch(request_url, json=data)
     if resp.status_code == 200:
         return 'updated', 200
-    else:
-        return 'error ' + str(resp.status_code), resp.status_code
+    return 'error ' + str(resp.status_code), resp.status_code
 
 
 @app.route('/api/group/<group_id>/events/<int:event_id>', methods=['DELETE'])
@@ -228,8 +220,7 @@ def delete_event(group_id, event_id):
     grsp = requests.patch(gurl, json={'events' : events})
     if grsp.status_code == 200:
         return 'deleted', 200
-    else:
-        return 'error ' + str(grsp.status_code), grsp.status_code
+    return 'error ' + str(grsp.status_code), grsp.status_code
 
 
 @app.route('/api/group/<group_id>/home')
