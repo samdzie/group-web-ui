@@ -1,11 +1,7 @@
 """A Flask API for the web app."""
 
-import random
-import string
-from datetime import datetime, timedelta
 import requests
-from flask import (abort, Flask, jsonify, make_response, request,
-    send_from_directory, url_for)
+from flask import abort, Flask, jsonify, request, send_from_directory
 
 
 app = Flask(__name__)
